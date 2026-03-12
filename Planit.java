@@ -7,7 +7,7 @@ class Task {
     int priority;
     String deadline;
     String status;
-    Task next;   // for Linked List
+    Task next; // for Linked List
 
     Task(int id, String name, int priority, String deadline) {
         this.id = id;
@@ -29,7 +29,7 @@ class TaskList {
             head = t;
         } else {
             Task temp = head;
-            //Traverse to last node
+            // Traverse to last node
             while (temp.next != null)
                 temp = temp.next;
             temp.next = t;
@@ -50,7 +50,8 @@ class TaskList {
 
     // Delete by ID
     void deleteTask(int id) {
-        if (head == null) return;
+        if (head == null)
+            return;
 
         if (head.id == id) {
             head = head.next;
@@ -68,7 +69,6 @@ class TaskList {
                 return;
             }
             prev = curr;
-            curr = curr.next;
         }
         System.out.println("Task not found.");
     }
@@ -91,6 +91,46 @@ class TaskList {
             temp = temp.next;
         }
     }
+
+    void sortByPriority() {
+        if (head == null)
+            return;
+
+        boolean swapped;
+        do {
+            swapped = false;
+            Task temp = head;
+
+            while (temp.next != null) {
+                if (temp.priority > temp.next.priority) {
+
+                    // Swap task data
+                    int id = temp.id;
+                    String name = temp.name;
+                    int priority = temp.priority;
+                    String deadline = temp.deadline;
+                    String status = temp.status;
+
+                    temp.id = temp.next.id;
+                    temp.name = temp.next.name;
+                    temp.priority = temp.next.priority;
+                    temp.deadline = temp.next.deadline;
+                    temp.status = temp.next.status;
+
+                    temp.next.id = id;
+                    temp.next.name = name;
+                    temp.next.priority = priority;
+                    temp.next.deadline = deadline;
+                    temp.next.status = status;
+
+                    swapped = true;
+                }
+                temp = temp.next;
+            }
+        } while (swapped);
+
+        System.out.println("Tasks sorted by priority successfully!");
+    }
 }
 
 // ================= STACK USING LINKED LIST =================
@@ -103,7 +143,8 @@ class TaskStack {
     }
 
     Task pop() {
-        if (top == null) return null;
+        if (top == null)
+            return null;
         Task temp = top;
         top = top.next;
         return temp;
@@ -129,7 +170,8 @@ class TaskQueue {
     }
 
     Task dequeue() {
-        if (front == null) return null;
+        if (front == null)
+            return null;
         Task temp = front;
         front = front.next;
         if (front == null)
@@ -137,6 +179,7 @@ class TaskQueue {
         return temp;
     }
 }
+
 // ================= HASH TABLE (CO4 FEATURE) =================
 class TaskHashTable {
 
@@ -176,24 +219,24 @@ class TaskHashTable {
         return null;
     }
 
-// NEW METHOD: Update status in hash table
-   void updateStatus(int id, String newStatus) {
+    // NEW METHOD: Update status in hash table
+    void updateStatus(int id, String newStatus) {
         int index = hash(id);
         int start = index;
 
         while (table[index] != null) {
             if (table[index].id == id) {
                 table[index].status = newStatus;
-                //System.out.println("Hash table status updated to: " + newStatus);
+                // System.out.println("Hash table status updated to: " + newStatus);
                 return;
             }
             index = (index + 1) % table.length;
-            if (index == start) break;
+            if (index == start)
+                break;
         }
-        //System.out.println("Task not found in hash table!");
+        // System.out.println("Task not found in hash table!");
     }
 }
-
 
 // ================= MAIN =================
 public class Planit {
@@ -216,8 +259,9 @@ public class Planit {
             System.out.println("4. View Schedule");
             System.out.println("5. Mark Task as Completed");
             System.out.println("6. Undo Last Completion");
-            System.out.println("7. Exit");
-            System.out.print( "Choose your option:");
+            System.out.println("7. Sort Tasks by Priority");
+            System.out.println("8. Exit");
+            System.out.print("Choose your option:");
             int ch = sc.nextInt();
 
             switch (ch) {
@@ -234,13 +278,13 @@ public class Planit {
                     System.out.print("Enter Deadline: ");
                     String dl = sc.nextLine();
 
-                   // Task newTask = new Task(id, name, pr, dl);
+                    // Task newTask = new Task(id, name, pr, dl);
                     Task taskForList = new Task(id, name, pr, dl);
                     Task taskForQueue = new Task(id, name, pr, dl);
                     Task taskForHash = new Task(id, name, pr, dl);
                     list.addTask(taskForList);
                     queue.enqueue(taskForQueue);
-                    hash.insert(taskForHash);   // hashing insert
+                    hash.insert(taskForHash); // hashing insert
                     break;
 
                 case 2:
@@ -253,15 +297,15 @@ public class Planit {
                     System.out.print("Enter ID: ");
                     int searchId = sc.nextInt();
                     Task found = list.searchById(searchId);
-                    if (found != null){
+                    if (found != null) {
                         System.out.println("Task Found: " + found.name);
                         System.out.println("Priority: " + found.priority);
                         System.out.println("Deadline: " + found.deadline);
                         System.out.println("Status: " + found.status);
-                    // Also search in Hash Table for demonstration
+                        // Also search in Hash Table for demonstration
                         Task hashFound = hash.search(searchId);
                         if (hashFound != null) {
-                            //System.out.println("   ✅ Also found in Hash Table");
+                            // System.out.println(" ✅ Also found in Hash Table");
                         }
                     } else {
                         System.out.println("❌ Task Not Found");
@@ -276,22 +320,21 @@ public class Planit {
                     System.out.print("Enter ID: ");
                     int completeId = sc.nextInt();
                     Task taskToComplete = list.searchById(completeId);
-                   if (taskToComplete != null) {
+                    if (taskToComplete != null) {
                         // Update status in Linked List
                         taskToComplete.status = "Completed";
-                        
+
                         // Update status in Hash Table
                         hash.updateStatus(completeId, "Completed");
-                        
+
                         // Create a copy for stack (so stack operations don't affect list)
                         Task taskForStack = new Task(
-                            taskToComplete.id, 
-                            taskToComplete.name, 
-                            taskToComplete.priority, 
-                            taskToComplete.deadline
-                        );
+                                taskToComplete.id,
+                                taskToComplete.name,
+                                taskToComplete.priority,
+                                taskToComplete.deadline);
                         taskForStack.status = "Completed";
-                        
+
                         // Push to stack for undo
                         stack.push(taskForStack);
                         System.out.println("✅ Task Marked as Completed!");
@@ -301,15 +344,15 @@ public class Planit {
                     }
                     break;
                 case 6:
-                     if (!stack.isEmpty()) {
+                    if (!stack.isEmpty()) {
                         Task undone = stack.pop();
-                        
+
                         // Update status in Linked List
                         Task taskInList = list.searchById(undone.id);
                         if (taskInList != null) {
                             taskInList.status = "Pending";
                         }
-                        
+
                         // Update status in Hash Table
                         hash.updateStatus(undone.id, "Pending");
                         System.out.println("✅ Undo Successful!");
@@ -319,13 +362,17 @@ public class Planit {
                     }
                     break;
                 case 7:
+                    list.sortByPriority();
+                    list.display();
+                    break;
+                case 8:
                     System.out.println("\n👋 Exiting... Thank you!");
                     System.exit(0);
-                    
+
                 default:
                     System.out.println("⚠️ Invalid option! Please choose 1-7.");
-                }
             }
+        }
 
     }
 }
